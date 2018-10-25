@@ -27,7 +27,7 @@ def get_kafka_shell_inputs(utils):
     utils.logger.info('Choosing defaults:')
     partitions=broker_hosts_count
     replicationfactor=min(3,broker_hosts_count)
-    messages=(partitions*1000000)
+    messages=(partitions*10000)
     threads=min(4,partitions)
     messagesize=100
     batchsize=10000
@@ -66,7 +66,7 @@ def main(utils, topic):
 
     #Produce
     logger.info("Producing {0} messages to topic {1}".format(messages, topic))
-    shell_command = "/usr/hdp/current/kafka-broker/bin/kafka-producer-perf-test.sh --broker-list {0} --topics {1} --messages {2} --message-size {3} --batch-size {4} --request-num-acks 0 --compression-codec 0 --threads {5}".format(
+    shell_command = "/usr/hdp/current/kafka-broker/bin/kafka-producer-perf-test.sh --producer-props \"bootstrap.servers={0}\" --producer.config producer-transactions-fast.properties --topic {1} --num-records {2} --record-size {3} --throughput 100 --transaction-duration-ms 10".format(
         brokers, topic, messages, messagesize, batchsize, threads)
     utils.run_shell_command(shell_command)
 
